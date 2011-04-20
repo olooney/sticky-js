@@ -1,0 +1,7 @@
+This is a simple-but-cute example of some draggable, stretchable, editable sticky notes on a web page.
+It uses jQuery and jQuery-UI for most of the effects, adding features to bring the current note to the 
+top and to automatically stretch the note if the user types too much text, and gluing it all together in 
+just 50 lines of code and another 35 lines of CSS.
+
+The code is mine and is placed in the public domain. The corkboard background and handwritten font are
+not but you can find attribution links at the bottom of the page.

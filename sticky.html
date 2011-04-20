@@ -1,0 +1,118 @@
+<!DOCTYPE HTML>
+<html>
+<head>
+	<title>Sticky</title>
+	<script type="text/javascript" src="https://ajax.googleapis.com/ajax/libs/jquery/1.5.0/jquery.min.js"></script>
+	<script type="text/javascript" src="http://ajax.googleapis.com/ajax/libs/jqueryui/1.7.2/jquery-ui.js"></script>
+	<link rel="stylesheet" type="text/css" href="http://ajax.googleapis.com/ajax/libs/jqueryui/1.7.1/themes/base/jquery-ui.css"/>
+
+	<style type="text/css">
+		@font-face {
+			font-family: Hand;
+			src: url(alliewriting__by_pixie_dixie_rulz.ttf);
+		}
+		body {
+			background-image: url(Paper6.jpg);
+			background-position: top right;
+		}
+		#main {
+			margin: 10px;
+			height: 1300px;
+		}
+		.sticky {
+			position: absolute;
+			width: 200px;
+			height: 180px;
+			padding: 1em;
+			cursor: move;
+			background-color: #fef282;
+			border: 1px solid #eee272;
+			box-shadow: 1px 2px 5px rgba(0, 0, 0, 0.27), 0 0 40px rgba(0, 0, 0, 0.06) inset;
+			-webkit-box-shadow: 1px 2px 5px rgba(0, 0, 0, 0.27), 0 0 40px rgba(0, 0, 0, 0.06) inset;
+			-moz-box-shadow: 1px 2px 5px rgba(0, 0, 0, 0.27), 0 0 40px rgba(0, 0, 0, 0.06) inset; 
+		}
+		.sticky textarea {
+			background-color: #fef282;
+			width: 100%;
+			height: 100%;
+			resize: none;
+			border: none;
+			font-family: Hand, cursive;
+			font-size: 20px;
+		}
+		.sticky textarea:focus {
+			outline: none;
+		}
+
+	</style>
+	<script type="text/javascript">
+		$(function() {
+			$.fn.stretchy = function() { 
+				$(this).each(function() {
+					var stretchy = this;
+					$(this).children('textarea').css({overflow: 'hidden'}).keyup(function() {
+						var scrollTop = $(this).scrollTop();
+						if ( scrollTop ) {
+							$(stretchy).height( $(stretchy).height() + scrollTop + 40 );
+						}
+					});
+				});
+				return this;
+			}
+
+			// cmp() function to help sort elements by zIndex
+			function compareZIndexes(a, b) {
+				var az = parseInt(a.style.zIndex) || 0;
+				var bz = parseInt(b.style.zIndex) || 0;
+				if ( az === bz ) return 0;
+				else if ( az < bz ) return -1;
+				else return 1;
+			}
+
+			$.fn.stack = function(selector, zIndex) {
+				zIndex = zIndex || 0;
+
+				// compactify all zIndexes in the managed set
+				function compactifyZIndexes() { 
+					$(selector).sort(compareZIndexes).each(function(i) {
+						console.log(this, this.style.zIndex, i);
+						this.style.zIndex = zIndex + i * 10;
+					});
+				}
+
+				// each time an managed element is clicked, bring it
+				// to the top and re-compactify all zIndexes.
+				$(this).mousedown(function() {
+					this.style.zIndex = 9999999;
+					compactifyZIndexes();
+				});
+
+				// compactify right away, too.
+				compactifyZIndexes();
+			}
+			$('.sticky')
+				.draggable({zIndex: 2000, containment: '#main' })
+				.resizable({handles: 'all', minHeight: 90, minWidth: 100 })
+				.stretchy()
+				.stack('.sticky', 100);
+		});
+	</script>
+</head>
+<body>
+<div id="main">
+	<div id="sticky1" class="sticky" style="top: 80px; left: 340px;"><textarea>Project Idea: Sticky note UI in jquery</textarea></div>
+	<div id="sticky2" class="sticky" style="top: 70px; left: 600px; z-index: 200;"><textarea>Move me...</textarea></div>
+	<div id="sticky2" class="sticky" style="top: 70px; left: 600px;"><textarea>Hey, you found a secret!</textarea></div>
+	<div id="sticky4" class="sticky" style="top: 50px; left: 50px;">
+<textarea>
+Milk
+Eggs
+Bread
+</textarea>
+	</div>
+	<div id="sticky3" class="sticky" style="top: 250px; left: 200px;"><textarea>Call Sarah: 555-234-5678</textarea></div>
+</div>
+<a href="http://bleeding-dragon.deviantart.com/art/10-old-paper-texture-32401994">Background Source</a>
+<a href="http://pixie-dixie-rulz.deviantart.com/">Font Source</a>
+</body>
+</html>

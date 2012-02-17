@@ -3,14 +3,21 @@
 <head>
 	<title>Sticky</title>
 	<script type="text/javascript" src="https://ajax.googleapis.com/ajax/libs/jquery/1.5.0/jquery.min.js"></script>
+
+	<!-- we need jquery UI for its draggable and resizable plugins. -->
 	<script type="text/javascript" src="http://ajax.googleapis.com/ajax/libs/jqueryui/1.7.2/jquery-ui.js"></script>
+
+	<!-- this CSS file goes along jquery UI, it's not obvious, but we do need it for the invisible resize handles. -->
 	<link rel="stylesheet" type="text/css" href="http://ajax.googleapis.com/ajax/libs/jqueryui/1.7.1/themes/base/jquery-ui.css"/>
 
 	<style type="text/css">
+		/* A hand-written font makes it look so much better. See the attribution below. */
 		@font-face {
 			font-family: Hand;
 			src: url(alliewriting__by_pixie_dixie_rulz.ttf);
 		}
+
+		/* A nice paper texture for the full background, also attributed below. */
 		body {
 			background-image: url(Paper6.jpg);
 			background-position: top right;
@@ -19,6 +26,8 @@
 			margin: 10px;
 			height: 1300px;
 		}
+
+		/* The fun part: making it look like a sticky note! .*/
 		.sticky {
 			position: absolute;
 			width: 200px;
@@ -40,6 +49,16 @@
 			font-family: Hand, cursive;
 			font-size: 20px;
 		}
+		#content-proxy {
+			position: absolute;
+			left: -999px;
+			top: -999px;
+			border: none;
+			font-family: Hand, cursive;
+			font-size: 20px;
+			word-wrap: break-word;
+			white-space: pre-wrap;
+		}
 		.sticky textarea:focus {
 			outline: none;
 		}
@@ -47,35 +66,62 @@
 	</style>
 	<script type="text/javascript">
 		$(function() {
+			// sticky note behavior can be decomposed into independent, re-usable features.
+			// some of it we get for free from jquery UI, the rest we provide here.
+
+			// stretchy plugin allows you to have a resizable div with a textarea inside it
 			$.fn.stretchy = function() { 
 				$(this).each(function() {
 					var stretchy = this;
 					$(this).children('textarea').css({overflow: 'hidden'}).keyup(function() {
-						var scrollTop = $(this).scrollTop();
-						if ( scrollTop ) {
-							$(stretchy).height( $(stretchy).height() + scrollTop + 40 );
+						// configure the content proxy to be exactly like this textarea
+						$('#content-proxy')
+							.html( $(this).val().replace(/\n/g, '<br>') )
+							.width( $(this).width() );
+
+						// we can now read the computed height off the proxy
+						var contentHeight = $('#content-proxy').height();
+
+						// auto-expand, leaving room for a blank line at the bottom
+						if ( contentHeight + 40 > $(stretchy).height() ) {
+							$(stretchy).height(contentHeight + 40);
 						}
+						// IE doesn't respect height: 100% on textareas 
+						if ( jQuery.browser.msie ) $(this).height( contentHeight + 40 );
 					});
+					if ( jQuery.browser.msie ) {
+						$(this).children('textarea').height( $(this).height() )
+						// var resizeHandlerId;
+						$(stretchy).bind('resize', function() {
+							$(stretchy).children('textarea').height( $(stretchy).height() - 10);
+							/*
+							clearTimeout(resizeHandlerId);
+							resizeHandlerId = setTimeout(function() {
+							}, 50);
+							*/
+						});
+					}
 				});
 				return this;
 			}
 
-			// cmp() function to help sort elements by zIndex
-			function compareZIndexes(a, b) {
-				var az = parseInt(a.style.zIndex) || 0;
-				var bz = parseInt(b.style.zIndex) || 0;
-				if ( az === bz ) return 0;
-				else if ( az < bz ) return -1;
-				else return 1;
-			}
-
+			// the stack plugin manages the zIndexes of a set of partially overlapping
+			// divs. Clicking on any element in the set brings it to the front while
+			// preserving the relative order of all others.
 			$.fn.stack = function(selector, zIndex) {
 				zIndex = zIndex || 0;
 
 				// compactify all zIndexes in the managed set
 				function compactifyZIndexes() { 
-					$(selector).sort(compareZIndexes).each(function(i) {
-						console.log(this, this.style.zIndex, i);
+					$(selector).sort( function (a, b) {
+						// first sort the elements by zIndex...
+						var az = parseInt(a.style.zIndex) || 0;
+						var bz = parseInt(b.style.zIndex) || 0;
+						if ( az === bz ) return 0;
+						else if ( az < bz ) return -1;
+						else return 1;
+					}).each(function(i) {
+						// then assign sequential zIndexes to them.
 						this.style.zIndex = zIndex + i * 10;
 					});
 				}
@@ -90,29 +136,51 @@
 				// compactify right away, too.
 				compactifyZIndexes();
 			}
+
+			// Functionally, a sticky note is simply a stacked, stretchy,
+			// draggable, and resizable element containing a textarea. 
 			$('.sticky')
 				.draggable({zIndex: 2000, containment: '#main' })
 				.resizable({handles: 'all', minHeight: 90, minWidth: 100 })
 				.stretchy()
 				.stack('.sticky', 100);
 		});
+
+		// this is a fix for jQuery's select-while-dragging bug in Chrome: http://bugs.jqueryui.com/ticket/4163
+		document.onselectstart = function () { return false; };
+
 	</script>
 </head>
 <body>
 <div id="main">
-	<div id="sticky1" class="sticky" style="top: 80px; left: 340px;"><textarea>Project Idea: Sticky note UI in jquery</textarea></div>
-	<div id="sticky2" class="sticky" style="top: 70px; left: 600px; z-index: 200;"><textarea>Move me...</textarea></div>
-	<div id="sticky2" class="sticky" style="top: 70px; left: 600px;"><textarea>Hey, you found a secret!</textarea></div>
-	<div id="sticky4" class="sticky" style="top: 50px; left: 50px;">
-<textarea>
+
+<div id="content-proxy"></div>
+
+<!-- Stickies can be defined using ordinary HTML. Just put the "sticky" class on a wrapper around a textarea! -->
+<div id="sticky1" class="sticky" style="top: 80px; left: 340px;"><textarea>Project Idea: Sticky note UI in jquery</textarea></div>
+<div id="sticky2" class="sticky" style="top: 70px; left: 600px; z-index: 200;"><textarea>Move me...</textarea></div>
+<div id="sticky2" class="sticky" style="top: 70px; left: 600px;"><textarea>
+Hey, you found a secret!
+
+Resize me by dragging my edges!
+</textarea></div>
+
+<!-- phone number sticky -->
+<div id="sticky3" class="sticky" style="top: 250px; left: 200px;"><textarea>
+Remember!
+Call Sarah @ 
+555-234-5678
+</textarea></div>
+
+<!-- grocery list sticky -->
+<div id="sticky4" class="sticky" style="top: 50px; left: 50px;"><textarea>
 Milk
 Eggs
 Bread
-</textarea>
-	</div>
-	<div id="sticky3" class="sticky" style="top: 250px; left: 200px;"><textarea>Call Sarah: 555-234-5678</textarea></div>
+</textarea></div>
+
 </div>
 <a href="http://bleeding-dragon.deviantart.com/art/10-old-paper-texture-32401994">Background Source</a>
-<a href="http://pixie-dixie-rulz.deviantart.com/">Font Source</a>
+<a href="http://pixie-dixie-rulz.deviantart.com/art/alliewriting-113656520">Font Source</a>
 </body>
 </html>

@@ -34,11 +34,11 @@
 			height: 180px;
 			padding: 1em;
 			cursor: move;
-			background-color: #fef282;
-			border: 1px solid #eee272;
-			box-shadow: 1px 2px 5px rgba(0, 0, 0, 0.27), 0 0 40px rgba(0, 0, 0, 0.06) inset;
-			-webkit-box-shadow: 1px 2px 5px rgba(0, 0, 0, 0.27), 0 0 40px rgba(0, 0, 0, 0.06) inset;
-			-moz-box-shadow: 1px 2px 5px rgba(0, 0, 0, 0.27), 0 0 40px rgba(0, 0, 0, 0.06) inset; 
+			background-color: #fef282; /* light-yellow default */
+			/*border: 1px solid #eee272;*/
+			box-shadow: 1px 2px 7px rgba(0, 0, 0, 0.27), 0 0 1em rgba(0, 0, 0, 0.1) inset;
+			-webkit-box-shadow: 1px 2px 7px rgba(0, 0, 0, 0.27), 0 0 1em rgba(0, 0, 0, 0.1) inset;
+			-moz-box-shadow: 1px 2px 7px rgba(0, 0, 0, 0.27), 0 0 1em rgba(0, 0, 0, 0.1) inset; 
 		}
 		.sticky textarea {
 			background-color: #fef282;
@@ -49,6 +49,19 @@
 			font-family: Hand, cursive;
 			font-size: 20px;
 		}
+        /* colorful! */
+        .sticky-yellow { background-color: #fef282; }
+        .sticky-yellow textarea { background-color: #fef282; }
+
+        .sticky-blue { background-color: #84dcf4; }
+        .sticky-blue textarea { background-color: #84dcf4; }
+
+        .sticky-orange { background-color: #ffa300; }
+        .sticky-orange textarea { background-color: #ffa300; }
+
+        .sticky-green { background-color: #c3f900; }
+        .sticky-green textarea { background-color: #c3f900; }
+
 		#content-proxy {
 			position: absolute;
 			left: -999px;
@@ -153,34 +166,34 @@
 </head>
 <body>
 <div id="main">
+<a href="http://bleeding-dragon.deviantart.com/art/10-old-paper-texture-32401994">Background Source</a><br>
+<a href="http://pixie-dixie-rulz.deviantart.com/art/alliewriting-113656520">Font Source</a>
 
 <div id="content-proxy"></div>
 
 <!-- Stickies can be defined using ordinary HTML. Just put the "sticky" class on a wrapper around a textarea! -->
-<div id="sticky1" class="sticky" style="top: 80px; left: 340px;"><textarea>Project Idea: Sticky note UI in jquery</textarea></div>
-<div id="sticky2" class="sticky" style="top: 70px; left: 600px; z-index: 200;"><textarea>Move me...</textarea></div>
-<div id="sticky2" class="sticky" style="top: 70px; left: 600px;"><textarea>
+<div id="sticky1" class="sticky sticky-blue" style="top: 80px; left: 340px;"><textarea>Project Idea: Sticky note UI in jquery</textarea></div>
+<div id="sticky2" class="sticky sticky-yellow" style="top: 70px; left: 600px; z-index: 200;"><textarea>Move me...</textarea></div>
+<div id="sticky2" class="sticky sticky-blue" style="top: 70px; left: 600px;"><textarea>
 Hey, you found a secret!
 
 Resize me by dragging my edges!
 </textarea></div>
 
 <!-- phone number sticky -->
-<div id="sticky3" class="sticky" style="top: 250px; left: 200px;"><textarea>
+<div id="sticky3" class="sticky sticky-green" style="top: 250px; left: 200px;"><textarea>
 Remember!
 Call Sarah @ 
 555-234-5678
 </textarea></div>
 
 <!-- grocery list sticky -->
-<div id="sticky4" class="sticky" style="top: 50px; left: 50px;"><textarea>
+<div id="sticky4" class="sticky sticky-orange" style="top: 55px; left: 50px;"><textarea>
 Milk
 Eggs
 Bread
 </textarea></div>
 
 </div>
-<a href="http://bleeding-dragon.deviantart.com/art/10-old-paper-texture-32401994">Background Source</a>
-<a href="http://pixie-dixie-rulz.deviantart.com/art/alliewriting-113656520">Font Source</a>
 </body>
 </html>
